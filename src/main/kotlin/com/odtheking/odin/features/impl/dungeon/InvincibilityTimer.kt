@@ -32,7 +32,6 @@ object InvincibilityTimer : Module(
 
     private val onlyInDungeons by BooleanSetting("Only In Dungeons", true, "Only proc in dungeons")
     private val showOnItem by BooleanSetting("Show On Item", true, "Renders the cooldown on the spirit mask and bonzo mask items")
-    private val showPhoenixOnTopLeft by BooleanSetting("Phoenix As Top Left", false, "Displays the cooldown for phoenix pet on the top-left most slot in your inventory")
     private val durability by BooleanSetting("Display As Durability", false, "True: durability, False: colored vertical slide").withDependency { showOnItem }
     private val cdColor by ColorSetting("Cooldown Color", Colors.gray38, true, "Color of the cooldown").withDependency { showOnItem }
 
@@ -103,10 +102,7 @@ object InvincibilityTimer : Module(
             val percent = when(slot.item.itemId) {
                 "BONZO_MASK", "STARRED_BONZO_MASK" -> InvincibilityType.BONZO.currentCooldown.toDouble() / InvincibilityType.BONZO.maxCooldownTime
                 "SPIRIT_MASK", "STARRED_SPIRIT_MASK" -> InvincibilityType.SPIRIT.currentCooldown.toDouble() / InvincibilityType.SPIRIT.maxCooldownTime
-                else -> {
-                    if(slot.containerSlot != 9 || !showPhoenixOnTopLeft) return@on
-                    InvincibilityType.PHOENIX.currentCooldown.toDouble() / InvincibilityType.PHOENIX.maxCooldownTime
-                }
+                else -> return@on
             }
             if (percent !in 0.0..1.0) return@on
             if (durability && percent > 0) {
